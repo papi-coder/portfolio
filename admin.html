@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Papi Admin</title>
+  <link rel="stylesheet" href="../frontend/styles.css">
+</head>
+<body>
+  <h2>Admin Dashboard</h2>
+  <form id="loginForm">
+    <input type="text" placeholder="Username" name="username">
+    <input type="password" placeholder="Password" name="password">
+    <button type="submit">Login</button>
+  </form>
+
+ 
+
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const dashboard = document.getElementById("dashboard");
+    const postForm = document.getElementById("postForm");
+    const postList = document.getElementById("postList");
+
+    let loggedIn = false;
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const res = await fetch("http://localhost:5000/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: e.target.username.value,
+          password: e.target.password.value
+        })
+      });
+      if (res.ok) {
+        loggedIn = true;
+        loginForm.style.display = "none";
+        dashboard.style.display = "block";
+        loadPosts();
+      } else {
+        alert("Invalid login");
+      }
+    });
+
+    postForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const res = await fetch("http://localhost:5000/api/admin/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: e.target.title.value,
+          content: e.target.content.value
+        })
+      });
+      if (res.ok) {
+        e.target.reset();
+        loadPosts();
+      }
+    });
+
+    async function loadPosts() {
+      const res = await fetch("http://localhost:5000/api/posts");
+      const posts = await res.json();
+      postList.innerHTML = posts.map(p => `
+        <div>
+          <h4>${p.title}</h4>
+          <p>${p.content}</p>
+          <button onclick="deletePost('${p._id}')">Delete</button>
+        </div>
+      `).join("");
+    }
+
+    async function deletePost(id) {
+      await fetch("http://localhost:5000/api/admin/posts/" + id, {
+        method: "DELETE"
+      });
+      loadPosts();
+    }
+  </script>
+</body>
+</html>

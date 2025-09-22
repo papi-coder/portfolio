@@ -1,0 +1,14 @@
+{
+  "name": "papi-portfolio",
+  "version": "1.0.0",
+  "description": "Papi Portfolio - personal portfolio with admin blog",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "express": "^4.21.2",
+    "sqlite3": "^5.1.7"
+  }
+}
